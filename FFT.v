@@ -87,7 +87,7 @@ Fixpoint fft Nlog2 (xs : slist C Nlog2) : slist C Nlog2 :=
           (scombine fft_evens twiddled))
   end.
 
-Instance smap_morphism : forall A B n, Proper ((pointwise_relation _ eq) ==> eq ==> eq) (@smap A B n).
+Global Instance smap_morphism : forall A B n, Proper ((pointwise_relation _ eq) ==> eq ==> eq) (@smap A B n).
 Proof.
   simpl_relation. induction y0.
   - simpl. rewrite H. reflexivity.
