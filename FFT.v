@@ -132,23 +132,23 @@ Lemma interleave_alternate :
                                                       (snd (alternate_split xs)) = xs.
 Proof.
   intros. dependent destruction xs.
-  apply (slist_pairwise_ind (fun n (xs ys : slist T n) =>
-    interleave (fst (alternate_split (Join xs ys)))
-               (snd (alternate_split (Join xs ys))) = Join xs ys)).
+  induction T, n, xs1, xs2 using slist_pairwise_ind.
   - reflexivity.
   - intros. rewrite alternate_split_parts.
     unfold interleave. simpl. fold interleave.
-    unfold alternate_split in H, H0. fold alternate_split in H, H0. rewrite H, H0.
+    unfold alternate_split in IHxs2_1, IHxs2_2.
+    fold alternate_split in IHxs2_1, IHxs2_2.
+    rewrite IHxs2_1, IHxs2_2.
     reflexivity.
 Qed.
 
 Lemma alternate_interleave :
   forall (T : Set) n (xs ys : slist T n), alternate_split (interleave xs ys) = (xs, ys).
 Proof.
-  intros. apply (slist_pairwise_ind2 (fun n (xs ys : slist T n) =>
-    alternate_split (interleave xs ys) = (xs, ys))).
+  intros.
+  induction T, n, xs, ys using slist_pairwise_ind2.
   - reflexivity.
-  - unfold interleave. fold interleave. simpl. intros. rewrite H, H0. simpl. reflexivity.
+  - unfold interleave. fold interleave. simpl. rewrite IHys1, IHys2. simpl. reflexivity.
 Qed.
 
 Section slist_alternate_ind.
@@ -173,14 +173,12 @@ Lemma Csum_alternate_split :
                     sfold Cadd (snd (alternate_split xs)).
 Proof.
   dependent destruction xs.
-  apply (slist_pairwise_ind (fun n (xs ys : slist C n) =>
-    sfold Cadd (Join xs ys) = sfold Cadd (fst (alternate_split (Join xs ys))) +
-                              sfold Cadd (snd (alternate_split (Join xs ys))))).
+  induction C, n, xs1, xs2 using slist_pairwise_ind; subst S.
   - reflexivity.
   - intros. unfold sfold at 1. fold sfold.
-    unfold sfold at 1 in H. fold sfold in H.
-    unfold sfold at 1 in H0. fold sfold in H0.
-    rewrite H, H0. simpl. ring.
+    unfold sfold at 1 in IHxs2_1. fold sfold in IHxs2_1.
+    unfold sfold at 1 in IHxs2_2. fold sfold in IHxs2_2.
+    rewrite IHxs2_1, IHxs2_2. simpl. ring.
 Qed.
 
 Lemma alternate_split_smap :
@@ -189,13 +187,9 @@ Lemma alternate_split_smap :
                                    smap f (snd (alternate_split xs))).
 Proof.
   dependent destruction xs.
-  apply (slist_pairwise_ind (fun n (xs ys : slist T n) =>
-    alternate_split (smap f (Join xs ys)) =
-      (smap f (fst (alternate_split (Join xs ys))),
-       smap f (snd (alternate_split (Join xs ys)))))).
+  induction T, n, xs1, xs2 using slist_pairwise_ind.
   - reflexivity.
-  - intros. simpl.
-    simpl in H, H0. rewrite H, H0. reflexivity.
+  - simpl. simpl in IHxs2_1, IHxs2_2. rewrite IHxs2_1, IHxs2_2. reflexivity.
 Qed.
 
 Section slist_pairwise_dual_ind.
@@ -224,14 +218,9 @@ Lemma alternate_split_scombine :
        scombine (snd (alternate_split xs)) (snd (alternate_split ys))).
 Proof.
   dependent destruction xs. dependent destruction ys.
-  apply (slist_pairwise_dual_ind (fun n (xs1 xs2 : slist T n) (ys1 ys2 : slist U n) =>
-    alternate_split (scombine (Join xs1 xs2) (Join ys1 ys2)) =
-    (scombine (fst (alternate_split (Join xs1 xs2)))
-              (fst (alternate_split (Join ys1 ys2))),
-     scombine (snd (alternate_split (Join xs1 xs2)))
-              (snd (alternate_split (Join ys1 ys2)))))).
+  induction T, U, n, xs1, xs2, ys1, ys2 using slist_pairwise_dual_ind.
   - reflexivity.
-  - intros. simpl. simpl in H, H0. rewrite H, H0. reflexivity.
+  - simpl. simpl in IHys2_1, IHys2_2. rewrite IHys2_1, IHys2_2. reflexivity.
 Qed.
 
 Lemma smap_smap :
